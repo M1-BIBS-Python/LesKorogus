@@ -1,9 +1,26 @@
-#!/usr/bin/env python
+#!/usr/bin/env  python
+# -*- coding:utf8 -*-
+
+"""
+Auteur : Arthur ROBIEUX
+E-mail : arthur.robieux@gmail.com
+Date : 11/04/2017
+
+Objectif : Fonction permettant de parser une protéine au format .pdb et de
+la tester avec un fichier test
+
+"""
 
 import math, string
 
 
-def parsePDBMultiChains(infile) :
+def parsePDB(infile) :
+    """
+    Permet de parser un fichier PDB.
+    Prend en entrée un fichier pdb et renvoi en sortie le fichier parsé
+    (organisé de façon à être utilisable dans d'autre programme).
+
+    """
 
     # lecture du fichier PDB 
     f = open(infile, "r")
@@ -47,4 +64,12 @@ def parsePDBMultiChains(infile) :
     return dPDB
 
 
-print parsePDBMultiChains("arginine.pdb")
+def usage():
+    """
+    Permet de tester la fonction parsePDB avec un fichier test
+    à entrer dans la fonction.
+    """
+    print parsePDB("arginine.pdb")
+
+
+usage()
