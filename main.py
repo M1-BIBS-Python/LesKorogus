@@ -9,7 +9,8 @@ Date : 12/04/2017
 Objectif : Utilisation hiérarchique de nos fonctions afin de répondre au problème initial.
 """
 
-from parsePDB import *
+from parsePDB   import *
+from RMSD       import *
 
 
 ########################################
@@ -56,5 +57,21 @@ print commun
 ###############################################
 #Calcul des RMSD pour chacune des conformations
 ###############################################
+
+
+RMSD_global = {}           #Clés : Model utilisé contre la référence, valeurs : RMSD
+
+for model in parse_frames.keys():
+    RMSD_global[model] = 0
+    # RMSD_global[model] = RMSD(parse_ref, parse_frames[model])
+
+
+
+print RMSD_global
+print len(RMSD_global)
+
+
+
+
 
 

@@ -132,17 +132,17 @@ def parsePDBmulti(infile):
     for line in lines:
 
         if "MODEL" in line:                                         #Si on commence une nouvelle conformations
-            # if conformations != "":                                 #On parse la conformation actuelle
-            #     parse_frames[model] = parsePDBstring(conformations)
+            if model != "":                                         #On parse la conformation actuelle
+                parse_frames[model] = parsePDBstring(conformations)
 
             conformations = []                                      #On supprime la conformation après l'avoir parsé
             model = line[10:14]                                     #Determination du nouveau "MODEL"
             nb_frames += 1
 
         else:
-            conformations.append(line)                                 #Sinon on ajoute les lignes correspondant à la conformation
+            conformations.append(line)                              #Sinon on ajoute les lignes correspondant à la conformation
 
-    parse_frames[model] = parsePDBstring(conformations)                   #Dernière conformation
+    parse_frames[model] = parsePDBstring(conformations)             #Dernière conformation
 
     return parse_frames
 
