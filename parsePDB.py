@@ -16,8 +16,9 @@ import math, string
 def parsePDBfile(infile) :
     """
     Permet de parser un fichier PDB.
-    Prend en entrée un fichier pdb et renvoi en sortie le fichier parsé
-    (organisé de façon à être utilisable dans d'autre programme).
+
+    Input : Fichier pdb représentant une protéine.
+    Output : Protéine parsée, lisible par Python.
 
     """
 
@@ -64,14 +65,12 @@ def parsePDBfile(infile) :
 
 
 
-
-
-def parsePDBchain(lines):
+def parsePDBstring(lines):
     """
     Permet de parser une chaine de caractère contenant le contenu d'un fichier pdb.
-    Prend en entrée un une chaine de caractère contenant le contenu d'un fichier pdb
-    et renvoi en sortie celle ci parsée (organisé de façon à être utilisable dans
-    d'autre programme).
+
+    Input : Chaine de caractère contenant une protéine au format pdb.
+    Output : Protéine parsée, lisible par Python.
 
     """
 
@@ -109,3 +108,41 @@ def parsePDBchain(lines):
             dPDB[chain][curres][atomtype]["id"] = line[6:11].strip()
 
     return dPDB
+
+
+
+def parsePDBmulti(infile):
+    """
+    Permet à partir d'un fichier contenant plusieurs proteines au format pdb, de parser chacune d'entre elles.
+
+    Input : Fichier contenant plusieurs protéines au format pdb.
+    Output : Dictionnaire contenant chaque protéine (clé) et son format parsé (lisible par Python).
+
+    """
+    frames = open(infile, "r")
+    lines = frames.readlines()
+    frames.close()
+
+    parse_frames = {}       #Dico contenant les sorties du parseur pour chaque conformations (clé : n°MODEL, valeur : sortie parsePDB())
+    nb_frames = 0           #Contient le nombre de conformations
+
+    conformations = []      #Contient le contenu du .pdb pour un seul model
+    model = ""              #Numéro du modèle (temps T de l'observation)
+
+    for line in lines:
+
+        if "MODEL" in line:                                         #Si on commence une nouvelle conformations
+            # if conformations != "":                                 #On parse la conformation actuelle
+            #     parse_frames[model] = parsePDBstring(conformations)
+
+            conformations = []                                      #On supprime la conformation après l'avoir parsé
+            model = line[10:14]                                     #Determination du nouveau "MODEL"
+            nb_frames += 1
+
+        else:
+            conformations.append(line)                                 #Sinon on ajoute les lignes correspondant à la conformation
+
+    parse_frames[model] = parsePDBstring(conformations)                   #Dernière conformation
+
+    return parse_frames
+
