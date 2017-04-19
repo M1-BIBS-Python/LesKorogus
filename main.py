@@ -12,66 +12,153 @@ Objectif : Utilisation hiérarchique de nos fonctions afin de répondre au probl
 from parsePDB   import *
 from RMSD       import *
 
+import matplotlib.pyplot as plt
 
-########################################
-#Parsage de la conformation de référence
-########################################
+#########################################
+# Parsage de la conformation de référence
+#########################################
 
 parse_ref = parsePDBfile("pab21_ref.pdb")
 
-f = open("parse_ref.txt", "w")
-f.write(str(parse_ref))
-f.close()
-
-##############################################
-#Parsage des 500 conformations de la structure
-##############################################
+###############################################
+# Parsage des 500 conformations de la structure
+###############################################
 
 parse_frames = parsePDBmulti("pab21_500frames.pdb")
 
-f = open("parse_frames.txt", "w")
-f.write(str(parse_frames))
-f.close()
 
 
-###########################
-#Vérifications des parsages
-###########################
+############################
+# Vérifications des parsages
+############################
 
 #len(parse_ref[" "].keys()) = 10 000 résidus
 #len(parse_frames["5000"][" "].keys()) = 321 résidus
 
-#Pourquoi la protéine de ref a 10 000 clés, et à un temps T que 321 clés ? (clés = residue seq number)
-#Vérification : Les 321 clés aux temps T sont dans la protéine de référence (elle est plus complète).
-
-commun = 0
-
-for a in parse_frames["5000"][" "].keys():
-    if a in parse_ref[" "].keys():
-        commun += 1
-
-print commun
+# commun = 0
+#
+# for a in parse_frames["5000"][" "].keys():
+#     if a in parse_ref[" "].keys():
+#         commun += 1
+#
+# print commun
 
 
 
-###############################################
-#Calcul des RMSD pour chacune des conformations
-###############################################
 
 
-RMSD_global = {}           #Clés : Model utilisé contre la référence, valeurs : RMSD
+################################################
+# Calcul des RMSD pour chacune des conformations
+################################################
+
+
+RMSD = {}           #Clés : Model utilisé contre la référence, valeurs : RMSD
 
 for model in parse_frames.keys():
-    RMSD_global[model] = 0
-    # RMSD_global[model] = RMSD(parse_ref, parse_frames[model])
+
+    RMSD[model] = {}
+
+    RMSD[model]["global"] = RMSDglobal(parse_ref, parse_frames[model])          # Calcul RMSD Global pour chaque conformation
+    RMSD[model]["domainA1"] = RMSDlocal(parse_ref, parse_frames[model], "A1")   # Calcul RMSD local à A1
+    RMSD[model]["domainA2"] = RMSDlocal(parse_ref, parse_frames[model], "A2")   # Calcul RMSD local à A2
+    RMSD[model]["domainA3"] = RMSDlocal(parse_ref, parse_frames[model], "A3")   # Calcul RMSD local à A3
+    RMSD[model]["domainA4"] = RMSDlocal(parse_ref, parse_frames[model], "A4")   # Calcul RMSD local à A4
+    RMSD[model]["domainB"] = RMSDlocal(parse_ref, parse_frames[model], "B")     # Calcul RMSD local à B
 
 
 
-print RMSD_global
-print len(RMSD_global)
+
+##########################################
+# Affichage RMSD dans un fichier de sortie
+##########################################
 
 
+# En tête
+
+f = open("RMSD.txt", "w")
+f.write("Model    Global    Domaine1    Domaine2    Domaine3    Domaine4    Domaine5\n\n")
+f.close()
+
+#Contenu
+
+f = open("RMSD.txt", "a")
+
+x = []
+yG = []
+yA1 = []
+yA2 = []
+yA3 = []
+yA4 = []
+yB = []
+
+for model in sorted(map(int, RMSD.keys())):      #Pour chaque modèle (ordre croissant)
+
+    #Affichage RMSD Globaux & locaux (pour chaque domaine)
+
+    f.write(str(model))
+    f.write("   ")
+    f.write(str(RMSD[str(model)]["global"]))
+    f.write("   ")
+    f.write(str(RMSD[str(model)]["domainA1"]))
+    f.write("   ")
+    f.write(str(RMSD[str(model)]["domainA2"]))
+    f.write("   ")
+    f.write(str(RMSD[str(model)]["domainA3"]))
+    f.write("   ")
+    f.write(str(RMSD[str(model)]["domainA4"]))
+    f.write("   ")
+    f.write(str(RMSD[str(model)]["domainB"]))
+    f.write("\n")
+
+    #Stockage des valeurs pour faire des graphiques
+
+    x.append(model)
+
+    yG.append(RMSD[str(model)]["global"])
+    yA1.append(RMSD[str(model)]["domainA1"])
+    yA2.append(RMSD[str(model)]["domainA2"])
+    yA3.append(RMSD[str(model)]["domainA3"])
+    yA4.append(RMSD[str(model)]["domainA4"])
+    yB.append(RMSD[str(model)]["domainB"])
 
 
+f.close()
 
 
+###Affichage des graphiques pour chaque RMSD (global & local)
+
+plt.title("RMSD Global")
+plt.plot(x, yG)
+plt.xlabel('Model (Temps)')
+plt.ylabel('RMSD Global')
+plt.show()
+
+plt.title("RMSD Domaine A1")
+plt.plot(x, yA1)
+plt.xlabel('Model (Temps)')
+plt.ylabel('RMSD Domaine A1')
+plt.show()
+
+plt.title("RMSD Domaine A2")
+plt.plot(x, yA2)
+plt.xlabel('Model (Temps)')
+plt.ylabel('RMSD Domaine A2')
+plt.show()
+
+plt.title("RMSD Domaine A3")
+plt.plot(x, yA3)
+plt.xlabel('Model (Temps)')
+plt.ylabel('RMSD Domaine A3')
+plt.show()
+
+plt.title("RMSD Domaine A4")
+plt.plot(x, yA4)
+plt.xlabel('Model (Temps)')
+plt.ylabel('RMSD Domaine A4')
+plt.show()
+
+plt.title("RMSD Domaine B")
+plt.plot(x, yB)
+plt.xlabel('Model (Temps)')
+plt.ylabel('RMSD Domaine B')
+plt.show()

@@ -59,7 +59,7 @@ def parsePDBfile(infile) :
             dPDB[chain][curres][atomtype]["x"] = float(line[30:38])
             dPDB[chain][curres][atomtype]["y"] = float(line[38:46])
             dPDB[chain][curres][atomtype]["z"] = float(line[46:54])
-            dPDB[chain][curres][atomtype]["id"] = line[6:11].strip()
+            dPDB[chain][curres][atomtype]["domain"] = line[72:74].strip()
 
     return dPDB
 
@@ -105,7 +105,7 @@ def parsePDBstring(lines):
             dPDB[chain][curres][atomtype]["x"] = float(line[30:38])
             dPDB[chain][curres][atomtype]["y"] = float(line[38:46])
             dPDB[chain][curres][atomtype]["z"] = float(line[46:54])
-            dPDB[chain][curres][atomtype]["id"] = line[6:11].strip()
+            dPDB[chain][curres][atomtype]["domain"] = line[72:74].strip()
 
     return dPDB
 
@@ -136,7 +136,7 @@ def parsePDBmulti(infile):
                 parse_frames[model] = parsePDBstring(conformations)
 
             conformations = []                                      #On supprime la conformation après l'avoir parsé
-            model = line[10:14]                                     #Determination du nouveau "MODEL"
+            model = line[10:14].strip()                             #Determination du nouveau "MODEL"
             nb_frames += 1
 
         else:
