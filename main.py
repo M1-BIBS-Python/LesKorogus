@@ -11,6 +11,7 @@ Objectif : Utilisation hiérarchique de nos fonctions afin de répondre au probl
 
 from parsePDB   import *
 from RMSD       import *
+from interface  import *
 
 import matplotlib.pyplot as plt
 
@@ -162,3 +163,62 @@ plt.plot(x, yB)
 plt.xlabel('Model (Temps)')
 plt.ylabel('RMSD Domaine B')
 plt.show()
+
+
+
+
+#####################################
+# Changements Conformationnels locaux
+#####################################
+
+#Test sur un fichier ayant que 2 conformations
+
+parse_2frames = parsePDBmultiInt("2frames.pdb")
+
+seuil = 9           #Seuil d'appartenance à l'interface
+interface = {}
+
+for model in parse_2frames.keys():
+
+    print model
+
+    for domain1 in parse_2frames[model][" "].keys():            #On compare 2 domaines
+
+            domainARN = "B"
+
+            if domain1 != domainARN:        #Pour éviter ARN vs ARN
+
+                for residu1 in parse_2frames[model][" "][domain1]["reslist"]:   # On compare 2 résidus
+
+                    inter = False
+
+                    for residu2 in parse_2frames[model][" "][domainARN]["reslist"]:
+
+                        if inter == False:
+
+                            #Calcul de la distance entre 2 résidus
+                            dist = distanceResidus(parse_2frames[model][" "][domain1][residu1], parse_2frames[model][" "][domainARN][residu2])
+
+                            if dist < seuil:
+                                if residu1 not in interface.keys():
+                                    interface[residu1] = 1
+                                    inter = True
+                                else:
+                                    interface[residu1] += 1
+                                    inter = True
+
+
+
+for residu in interface.keys():
+    interface[residu] = float(interface[residu]) / 2
+
+
+
+print interface
+
+
+
+
+
+
+

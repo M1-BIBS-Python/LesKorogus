@@ -63,9 +63,9 @@ def RMSDlocal(parse1, parse2, domain):
 
                     if parse2[" "][residu2][atom]['domain'] == domain:      #Si l'atome est dans le domaine voulu
 
-                        somme += (sqrt((parse2[" "][residu2][atom]['x'] - parse1[" "][residu1][atom]['x']) ** 2 +
+                        somme += sqrt((parse2[" "][residu2][atom]['x'] - parse1[" "][residu1][atom]['x']) ** 2 +
                                  (parse2[" "][residu2][atom]['y'] - parse1[" "][residu1][atom]['y']) ** 2 +
-                                 (parse2[" "][residu2][atom]['z'] - parse1[" "][residu1][atom]['z']) ** 2)) ** 2
+                                 (parse2[" "][residu2][atom]['z'] - parse1[" "][residu1][atom]['z']) ** 2)
                         N += 1
 
 
