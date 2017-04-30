@@ -6,7 +6,7 @@ Auteur : Arthur ROBIEUX - Julien ROZIERE
 E-mail : arthur.robieux@gmail.com, julien.roziere@u-psud.fr
 Date : 24/04/2017
 
-Objectif : Utilisation hiérarchique de nos fonctions afin de répondre au problème initial.
+Objectif : Calculer la distance entre les résidus de différents domaines ainsi que leur temps de contact.
 """
 
 from math import sqrt
@@ -38,5 +38,25 @@ def distanceResidus(res1, res2):
 
 
     return distMin
+
+
+
+def tempsContact(res1, res2, seuil):
+    """
+    Permet de savoir si 2 résidus sont en contact en fonction du seuil choisi
+
+    :param res1: 1er résidu
+    :param res2: 2eme résidu
+    :param seuil: Seuil d'appartenance à l'interface
+    :return: Vrai si contact, Faux sinon
+    """
+
+    dist = distanceResidus(res1, res2)
+
+    if dist < seuil:
+        return True
+
+    return False
+
 
 

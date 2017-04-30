@@ -2,8 +2,8 @@
 # -*- coding:utf8 -*-
 
 """
-Auteur : Arthur ROBIEUX
-E-mail : arthur.robieux@gmail.com
+Auteur : Arthur ROBIEUX - Julien ROZIERE
+E-mail : arthur.robieux@gmail.com, julien.roziere@u-psud.fr
 Date : 12/04/2017
 
 Objectif : Utilisation hiérarchique de nos fonctions afin de répondre au problème initial.
@@ -13,7 +13,6 @@ from parsePDB   import *
 from RMSD       import *
 from interface  import *
 
-import matplotlib.pyplot as plt
 
 #########################################
 # Parsage de la conformation de référence
@@ -26,26 +25,6 @@ parse_ref = parsePDBfile("pab21_ref.pdb")
 ###############################################
 
 parse_frames = parsePDBmulti("pab21_500frames.pdb")
-
-
-
-############################
-# Vérifications des parsages
-############################
-
-#len(parse_ref[" "].keys()) = 10 000 résidus
-#len(parse_frames["5000"][" "].keys()) = 321 résidus
-
-# commun = 0
-#
-# for a in parse_frames["5000"][" "].keys():
-#     if a in parse_ref[" "].keys():
-#         commun += 1
-#
-# print commun
-
-
-
 
 
 ################################################
@@ -67,103 +46,12 @@ for model in parse_frames.keys():
     RMSD[model]["domainB"] = RMSDlocal(parse_ref, parse_frames[model], "B")     # Calcul RMSD local à B
 
 
-
-
 ##########################################
 # Affichage RMSD dans un fichier de sortie
+# Obtention de graphique
 ##########################################
 
-
-# En tête
-
-f = open("RMSD.txt", "w")
-f.write("Model    Global    Domaine1    Domaine2    Domaine3    Domaine4    Domaine5\n\n")
-f.close()
-
-#Contenu
-
-f = open("RMSD.txt", "a")
-
-x = []
-yG = []
-yA1 = []
-yA2 = []
-yA3 = []
-yA4 = []
-yB = []
-
-for model in sorted(map(int, RMSD.keys())):      #Pour chaque modèle (ordre croissant)
-
-    #Affichage RMSD Globaux & locaux (pour chaque domaine)
-
-    f.write(str(model))
-    f.write("   ")
-    f.write(str(RMSD[str(model)]["global"]))
-    f.write("   ")
-    f.write(str(RMSD[str(model)]["domainA1"]))
-    f.write("   ")
-    f.write(str(RMSD[str(model)]["domainA2"]))
-    f.write("   ")
-    f.write(str(RMSD[str(model)]["domainA3"]))
-    f.write("   ")
-    f.write(str(RMSD[str(model)]["domainA4"]))
-    f.write("   ")
-    f.write(str(RMSD[str(model)]["domainB"]))
-    f.write("\n")
-
-    #Stockage des valeurs pour faire des graphiques
-
-    x.append(model)
-
-    yG.append(RMSD[str(model)]["global"])
-    yA1.append(RMSD[str(model)]["domainA1"])
-    yA2.append(RMSD[str(model)]["domainA2"])
-    yA3.append(RMSD[str(model)]["domainA3"])
-    yA4.append(RMSD[str(model)]["domainA4"])
-    yB.append(RMSD[str(model)]["domainB"])
-
-
-f.close()
-
-
-###Affichage des graphiques pour chaque RMSD (global & local)
-
-plt.title("RMSD Global")
-plt.plot(x, yG)
-plt.xlabel('Model (Temps)')
-plt.ylabel('RMSD Global')
-plt.show()
-
-plt.title("RMSD Domaine A1")
-plt.plot(x, yA1)
-plt.xlabel('Model (Temps)')
-plt.ylabel('RMSD Domaine A1')
-plt.show()
-
-plt.title("RMSD Domaine A2")
-plt.plot(x, yA2)
-plt.xlabel('Model (Temps)')
-plt.ylabel('RMSD Domaine A2')
-plt.show()
-
-plt.title("RMSD Domaine A3")
-plt.plot(x, yA3)
-plt.xlabel('Model (Temps)')
-plt.ylabel('RMSD Domaine A3')
-plt.show()
-
-plt.title("RMSD Domaine A4")
-plt.plot(x, yA4)
-plt.xlabel('Model (Temps)')
-plt.ylabel('RMSD Domaine A4')
-plt.show()
-
-plt.title("RMSD Domaine B")
-plt.plot(x, yB)
-plt.xlabel('Model (Temps)')
-plt.ylabel('RMSD Domaine B')
-plt.show()
-
+sortieRMSD(RMSD)
 
 
 
@@ -171,36 +59,36 @@ plt.show()
 # Changements Conformationnels locaux
 #####################################
 
-#Test sur un fichier ayant que 2 conformations
+#Parsage spécifique pour cette partie (changement de hiérarchie)
 
-parse_2frames = parsePDBmultiInt("2frames.pdb")
+parse_framesInt = parsePDBmultiInt("pab21_500frames.pdb")
 
 seuil = 9           #Seuil d'appartenance à l'interface
-interface = {}
+interface = {}      #Clé = Résidu appartenant à l'interface, Valeur : Fréquence
 
-for model in parse_2frames.keys():
+for model in parse_framesInt.keys():
 
     print model
 
-    for domain1 in parse_2frames[model][" "].keys():            #On compare 2 domaines
+    for domain1 in parse_framesInt[model][" "].keys():            #On compare 2 domaines
 
             domainARN = "B"
 
             if domain1 != domainARN:        #Pour éviter ARN vs ARN
 
-                for residu1 in parse_2frames[model][" "][domain1]["reslist"]:   # On compare 2 résidus
+                for residu1 in parse_framesInt[model][" "][domain1]["reslist"]:   # On compare 2 résidus
 
-                    inter = False
+                    inter = False           #Booléen permettant de savoir si le résidu est deja dans l'interface
 
-                    for residu2 in parse_2frames[model][" "][domainARN]["reslist"]:
+                    for residu2 in parse_framesInt[model][" "][domainARN]["reslist"]:
 
-                        if inter == False:
+                        if inter == False:          #Si le résidu n'est pas deja dans l'interface
 
                             #Calcul de la distance entre 2 résidus
-                            dist = distanceResidus(parse_2frames[model][" "][domain1][residu1], parse_2frames[model][" "][domainARN][residu2])
+                            dist = distanceResidus(parse_framesInt[model][" "][domain1][residu1], parse_framesInt[model][" "][domainARN][residu2])
 
-                            if dist < seuil:
-                                if residu1 not in interface.keys():
+                            if dist < seuil:                            #Si distance inférieur au seuil, résidu dans interface
+                                if residu1 not in interface.keys():     #puis on change de résidu
                                     interface[residu1] = 1
                                     inter = True
                                 else:
@@ -209,16 +97,45 @@ for model in parse_2frames.keys():
 
 
 
-for residu in interface.keys():
-    interface[residu] = float(interface[residu]) / 2
+for residu in interface.keys():                                 #On calcul la fréquence de la présence dans l'interface
+    interface[residu] = float(interface[residu]) / 2            #pour chaque résidu présent 1x au moins
+
+
+###Affichage des fréquences des résidus dans l'interface
+
+f = open("interface.txt", "w")
+for residu in sorted(map(int, interface.keys())):
+    f.write(str(residu))
+    f.write("   ")
+    f.write(str(interface[str(residu)]))
+    f.write("\n")
+f.close()
 
 
 
-print interface
+####################################################################
+# Calcul des temps de contacts pour les paires de résidus d'intérêts
+####################################################################
+
+tpsContact = {}             #Clé = paire de résidus, Valeurs = Temps de Contact
+tpsContact["26-38"] = 0     #Initialisation du dico
+tpsContact["25-46"] = 0
+tpsContact["33-34"] = 0
+tpsContact["31-100"] = 0
+
+for model in parse_framesInt.keys():      #Calcul des Temps de Contact pour chaque paire pour chaque conformation
+
+    if(tempsContact(parse_framesInt[model][" "]["B"]["26"], parse_framesInt[model][" "]["A1"]["38"], seuil)):
+        tpsContact["26-38"] += 1
+
+    if(tempsContact(parse_framesInt[model][" "]["B"]["25"], parse_framesInt[model][" "]["A4"]["46"], seuil)):
+        tpsContact["25-46"] += 1
+
+    if(tempsContact(parse_framesInt[model][" "]["B"]["33"], parse_framesInt[model][" "]["A3"]["34"], seuil)):
+        tpsContact["33-34"] += 1
+
+    if(tempsContact(parse_framesInt[model][" "]["B"]["31"], parse_framesInt[model][" "]["A4"]["100"], seuil)):
+        tpsContact["31-100"] += 1
 
 
-
-
-
-
-
+print tpsContact
