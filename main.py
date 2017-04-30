@@ -68,8 +68,6 @@ interface = {}      #Clé = Résidu appartenant à l'interface, Valeur : Fréque
 
 for model in parse_framesInt.keys():
 
-    print model
-
     for domain1 in parse_framesInt[model][" "].keys():            #On compare 2 domaines
 
             domainARN = "B"
@@ -138,4 +136,13 @@ for model in parse_framesInt.keys():      #Calcul des Temps de Contact pour chaq
         tpsContact["31-100"] += 1
 
 
-print tpsContact
+
+###Affichage des temps de Contact
+
+f = open("contact.txt", "w")
+for paire in tpsContact.keys():
+    f.write(paire)
+    f.write("   ")
+    f.write(str(tpsContact[paire]))
+    f.write("\n")
+f.close()
