@@ -97,8 +97,8 @@ for model in parse_framesInt.keys():
 
 
 
-for residu in interface.keys():                                 #On calcul la fréquence de la présence dans l'interface
-    interface[residu] = float(interface[residu]) / 2            #pour chaque résidu présent 1x au moins
+for residu in interface.keys():                                   #On calcul la fréquence de la présence dans l'interface
+    interface[residu] = float(interface[residu]) / 500            #pour chaque résidu présent 1x au moins
 
 
 ###Affichage des fréquences des résidus dans l'interface
