@@ -13,7 +13,7 @@ from parsePDB   import *
 from RMSD       import *
 from interface  import *
 
-
+"""
 #########################################
 # Parsage de la conformation de référence
 #########################################
@@ -53,7 +53,7 @@ for model in parse_frames.keys():
 
 sortieRMSD(RMSD)
 
-
+"""
 
 #####################################
 # Changements Conformationnels locaux
@@ -65,12 +65,13 @@ parse_framesInt = parsePDBmultiInt("pab21_500frames.pdb")
 
 seuil = 9           #Seuil d'appartenance à l'interface
 interface = {}      #Clé = Résidu appartenant à l'interface, Valeur : Fréquence
+domainARN = "B"
+
+cpt = 1
 
 for model in parse_framesInt.keys():
-
+    print(cpt)
     for domain1 in parse_framesInt[model][" "].keys():            #On compare 2 domaines
-
-            domainARN = "B"
 
             if domain1 != domainARN:        #Pour éviter ARN vs ARN
 
@@ -87,26 +88,33 @@ for model in parse_framesInt.keys():
 
                             if dist < seuil:                            #Si distance inférieur au seuil, résidu dans interface
                                 if residu1 not in interface.keys():     #puis on change de résidu
-                                    interface[residu1] = 1
+                                    interface[domain1] = {}
+                                    interface[domain1][residu1] = 1
                                     inter = True
                                 else:
-                                    interface[residu1] += 1
+                                    interface[domain1][residu1] += 1
                                     inter = True
+                        else:
+                            break
+    cpt += 1
 
 
-
-for residu in interface.keys():                                   #On calcul la fréquence de la présence dans l'interface
-    interface[residu] = float(interface[residu]) / 500            #pour chaque résidu présent 1x au moins
+for domain in interface.keys():
+    for residu in interface[domain].keys():                                   #On calcul la fréquence de la présence dans l'interface
+        interface[domain][residu] = float(interface[domain][residu]) / 500    #pour chaque résidu présent 1x au moins
 
 
 ###Affichage des fréquences des résidus dans l'interface
 
 f = open("interface.txt", "w")
-for residu in sorted(map(int, interface.keys())):
-    f.write(str(residu))
-    f.write("   ")
-    f.write(str(interface[str(residu)]))
+for domain in interface.keys():
+    f.write(domain)
     f.write("\n")
+    for residu in sorted(map(int, interface[domain].keys())):
+        f.write(str(residu))
+        f.write("   ")
+        f.write(str(interface[domain][str(residu)]))
+        f.write("\n")
 f.close()
 
 
@@ -122,7 +130,6 @@ tpsContact["33-34"] = 0
 tpsContact["31-100"] = 0
 
 for model in parse_framesInt.keys():      #Calcul des Temps de Contact pour chaque paire pour chaque conformation
-
     if(tempsContact(parse_framesInt[model][" "]["B"]["26"], parse_framesInt[model][" "]["A1"]["38"], seuil)):
         tpsContact["26-38"] += 1
 
