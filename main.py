@@ -13,7 +13,7 @@ from parsePDB   import *
 from RMSD       import *
 from interface  import *
 
-"""
+
 #########################################
 # Parsage de la conformation de référence
 #########################################
@@ -53,7 +53,7 @@ for model in parse_frames.keys():
 
 sortieRMSD(RMSD)
 
-"""
+
 
 #####################################
 # Changements Conformationnels locaux
@@ -67,10 +67,7 @@ seuil = 9           #Seuil d'appartenance à l'interface
 interface = {}      #Clé = Résidu appartenant à l'interface, Valeur : Fréquence
 domainARN = "B"
 
-cpt = 1
-
 for model in parse_framesInt.keys():
-    print(cpt)
     for domain1 in parse_framesInt[model][" "].keys():            #On compare 2 domaines
 
             if domain1 != domainARN:        #Pour éviter ARN vs ARN
@@ -94,10 +91,6 @@ for model in parse_framesInt.keys():
                                 else:
                                     interface[domain1][residu1] += 1
                                     inter = True
-                        else:
-                            break
-    cpt += 1
-
 
 for domain in interface.keys():
     for residu in interface[domain].keys():                                   #On calcul la fréquence de la présence dans l'interface
