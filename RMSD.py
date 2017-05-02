@@ -2,8 +2,8 @@
 # -*- coding:utf8 -*-
 
 """
-Auteur : Arthur ROBIEUX
-E-mail : arthur.robieux@gmail.com
+Auteur : Arthur ROBIEUX - Julien ROZIERE
+E-mail : arthur.robieux@gmail.com - julien.roziere@u-psud.fr
 Date : 12/04/2017
 Objectif : Permet de calculer la RMSD entre 2 protéines.
 """
