@@ -53,7 +53,7 @@ for model in parse_frames.keys():
 
 sortieRMSD(RMSD)
 
-
+"""
 
 #####################################
 # Changements Conformationnels locaux
@@ -146,3 +146,4 @@ for paire in tpsContact.keys():
     f.write(str(tpsContact[paire]))
     f.write("\n")
 f.close()
+"""
