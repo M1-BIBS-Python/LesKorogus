@@ -53,7 +53,7 @@ for model in parse_frames.keys():
 
 sortieRMSD(RMSD)
 
-"""
+
 
 #####################################
 # Changements Conformationnels locaux
@@ -64,7 +64,7 @@ sortieRMSD(RMSD)
 parse_framesInt = parsePDBmultiInt("pab21_500frames.pdb")
 
 seuil = 9           #Seuil d'appartenance à l'interface
-interface = {}      #Clé = Résidu appartenant à l'interface, Valeur : Fréquence
+interface = {}      #Clé = Domaine, Valeur : résidus appartenant à l'interface (+occurence)
 domainARN = "B"
 
 for model in parse_framesInt.keys():
@@ -146,4 +146,3 @@ for paire in tpsContact.keys():
     f.write(str(tpsContact[paire]))
     f.write("\n")
 f.close()
-"""
